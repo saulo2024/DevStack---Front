@@ -1,85 +1,97 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react' // Importando as ferramentas
 import type { FormEvent } from 'react'
+import { z } from 'zod'
 import { api } from './services/api'
-import { Header } from './components/Header'
-import { UserCard } from './components/UserCard' // Importação corrigida com { }
 import toast, { Toaster } from 'react-hot-toast'
-import { AnimatePresence } from 'framer-motion'
+
+// 1. A REGRA DO ZOD (Fica do lado de fora)
+const userSchema = z.object({
+  name: z.string().min(2, "Nome muito curto"),
+  email: z.string().email("E-mail inválido")
+})
 
 interface User {
-  id: string; 
-  name: string; 
-  email: string;
+  id: string; name: string; email: string;
 }
 
 export default function App() {
+  // 2. AS CAIXINHAS (Estados)
   const [users, setUsers] = useState<User[]>([])
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(true)
 
+  // 3. BUSCANDO OS DADOS (Aqui usamos o useEffect)
   async function loadUsers() {
     setLoading(true)
     try {
       const response = await api.get('/users')
       setUsers(response.data)
-    } finally { setLoading(false) }
+    } finally {
+      setLoading(false)
+    }
   }
 
-  useEffect(() => { loadUsers() }, [])
+  // O "useEffect" entra aqui! Ele chama a busca assim que o site abre.
+  // ISSO FAZ O ERRO SUMIR!
+  useEffect(() => {
+    loadUsers()
+  }, [])
 
+  // 4. SALVANDO NOVO USUÁRIO
   async function handleSubmit(event: FormEvent) {
     event.preventDefault()
-    if (!name || !email) return toast.error("Preencha tudo!")
-    
+
+    const result = userSchema.safeParse({ name, email })
+
+    if (!result.success) {
+      return toast.error(result.error.issues[0].message)
+    }
+
     try {
       const response = await api.post('/users', { name, email })
       setUsers(allUsers => [...allUsers, response.data])
-      setName(''); setEmail(''); toast.success("Cadastrado!")
-    } catch { toast.error("Erro ao cadastrar.") }
-  }
-
-  async function handleDelete(id: string) {
-    try {
-      await api.delete(`/users/${id}`)
-      setUsers(users.filter(u => u.id !== id))
-      toast.success("Removido!")
-    } catch { toast.error("Erro ao deletar.") }
+      setName(''); setEmail('')
+      toast.success("Desenvolvedor cadastrado!")
+    } catch {
+      toast.error("Erro ao salvar.")
+    }
   }
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-50 p-8 flex flex-col items-center">
-      <Toaster position="top-right" />
-      <Header />
+    <div className="min-h-screen bg-zinc-950 text-white p-8">
+      <Toaster />
+      <h1 className="text-3xl font-bold text-center text-emerald-400 mb-8">DevStack</h1>
+      
+      {/* Formulário */}
+      <form onSubmit={handleSubmit} className="max-w-md mx-auto flex flex-col gap-4 mb-10">
+        <input 
+          className="bg-zinc-900 p-3 rounded border border-zinc-800"
+          placeholder="Nome" value={name} onChange={e => setName(e.target.value)} 
+        />
+        <input 
+          className="bg-zinc-900 p-3 rounded border border-zinc-800"
+          placeholder="E-mail" value={email} onChange={e => setEmail(e.target.value)} 
+        />
+        <button className="bg-emerald-500 p-3 rounded font-bold hover:bg-emerald-600 transition-colors">
+          Cadastrar
+        </button>
+      </form>
 
-      <main className="w-full max-w-2xl">
-        <form onSubmit={handleSubmit} className="bg-zinc-900 p-6 rounded-xl border border-zinc-800 mb-10 flex flex-col gap-4">
-          <input className="bg-zinc-950 border border-zinc-800 rounded-lg p-3" placeholder="Nome" value={name} onChange={e => setName(e.target.value)} />
-          <input className="bg-zinc-950 border border-zinc-800 rounded-lg p-3" placeholder="E-mail" value={email} onChange={e => setEmail(e.target.value)} />
-          <button className="bg-emerald-500 hover:bg-emerald-600 font-bold py-3 rounded-lg">Cadastrar</button>
-        </form>
-
-        <section className="flex flex-col gap-4">
-          <h2 className="text-xl font-semibold text-zinc-300">Desenvolvedores Ativos:</h2>
-          
-          {loading ? (
-            <p className="text-zinc-500 animate-pulse text-center py-10">Carregando...</p>
-          ) : (
-            <div className="flex flex-col gap-4">
-              <AnimatePresence>
-                {users.map(user => (
-                  <UserCard 
-                    key={user.id} 
-                    name={user.name} 
-                    email={user.email} 
-                    onDelete={() => handleDelete(user.id)} 
-                  />
-                ))}
-              </AnimatePresence>
+      {/* Lista */}
+      <div className="max-w-md mx-auto">
+        <h2 className="text-xl mb-4">Desenvolvedores Ativos:</h2>
+        {loading ? (
+          <p>Carregando...</p>
+        ) : (
+          users.map(user => (
+            <div key={user.id} className="p-4 bg-zinc-900 border border-zinc-800 rounded mb-2">
+              <p className="font-bold">{user.name}</p>
+              <p className="text-zinc-500 text-sm">{user.email}</p>
             </div>
-          )}
-        </section>
-      </main>
+          ))
+        )}
+      </div>
     </div>
   )
 }
