@@ -51,10 +51,13 @@ export default function App() {
   // SITUAÇÃO 2: FILTRO EM TEMPO REAL (Pesquisa)
   // ---------------------------------------------------------
   const filteredUsers = useMemo(() => {
-    return users.filter((user) =>
-      user.name.toLowerCase().includes(search.toLowerCase()),
-    );
+    return users
+      .filter((user) => user.name.toLowerCase().includes(search.toLowerCase()))
+      .sort((a, b) => a.name.localeCompare(b.name)); // Ordenação A-Z
   }, [users, search]);
+
+  // ADICIONAR: Uma contagem simples (Estado Derivado)
+  const totalDevs = users.length;
 
   // ---------------------------------------------------------
   // SITUAÇÃO 3: CADASTRO E EDIÇÃO (Criação ou Atualização)
@@ -160,7 +163,8 @@ export default function App() {
         <section className="flex flex-col gap-4">
           <div className="flex justify-between items-center mb-2">
             <h2 className="text-xl font-semibold text-zinc-300">
-              Desenvolvedores Ativos:
+              Desenvolvedores Ativos:{" "}
+              <span className="text-emerald-500">{totalDevs}</span>
             </h2>
             <input
               placeholder="Buscar..."
