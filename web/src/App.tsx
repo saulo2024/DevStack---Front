@@ -179,15 +179,39 @@ export default function App() {
               </div>
             ) : (
               <AnimatePresence mode="popLayout">
-                {filteredUsers.map((user) => (
-                  <UserCard
-                    key={user.id}
-                    name={user.name}
-                    email={user.email}
-                    onDelete={() => setUserToDelete(user)}
-                    onEdit={() => handleEditClick(user)}
-                  />
-                ))}
+                {/* Caso 1: A busca não encontrou ninguém */}
+                {search !== "" && filteredUsers.length === 0 ? (
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="text-center py-10 text-zinc-500 italic"
+                  >
+                    Nenhum desenvolvedor encontrado com "{search}"...
+                  </motion.p>
+                ) : /* Caso 2: O banco de dados está realmente vazio */
+                users.length === 0 ? (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="text-center py-16 bg-zinc-900/30 border-2 border-dashed border-zinc-800 rounded-xl"
+                  >
+                    <p className="text-zinc-400">Sua stack ainda está vazia.</p>
+                    <p className="text-zinc-600 text-sm">
+                      Cadastre o primeiro dev acima! 🚀
+                    </p>
+                  </motion.div>
+                ) : (
+                  /* Caso 3: Tudo certo, mostra a lista filtrada */
+                  filteredUsers.map((user) => (
+                    <UserCard
+                      key={user.id}
+                      name={user.name}
+                      email={user.email}
+                      onDelete={() => setUserToDelete(user)}
+                      onEdit={() => handleEditClick(user)}
+                    />
+                  ))
+                )}
               </AnimatePresence>
             )}
           </div>
