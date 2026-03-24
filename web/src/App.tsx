@@ -153,13 +153,20 @@ export default function App() {
 
           <button
             disabled={isSubmitting}
-            className={`${isEditing ? "bg-blue-600 hover:bg-blue-700" : "bg-emerald-500 hover:bg-emerald-600"} font-bold py-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
+            className={`w-full font-bold py-3 rounded-lg transition-all flex items-center justify-center gap-2 ${isEditing ? "bg-blue-600 hover:bg-blue-700" : "bg-emerald-500 hover:bg-emerald-600"} ${
+             isSubmitting ? "opacity-50 cursor-not-allowed" : "opacity-100 cursor-pointer" } `}
           >
-            {isSubmitting
-              ? "Processando..."
-              : isEditing
-                ? "Salvar Alterações"
-                : "Cadastrar Desenvolvedor"}
+            {isSubmitting ? (
+              <>
+                <span className="w- h-4 border-2 border-white/30 border-t-white rounded-full animate-spin">
+                </span>
+                Processando...
+              </>
+            ) : (
+              <span>
+                {isEditing ? "Salvar Alterações" : "Cadastrar Desenvolvedor"}
+              </span>
+            ) }
           </button>
 
           {isEditing && (
@@ -177,8 +184,8 @@ export default function App() {
         <section className="flex flex-col gap-4">
           <div className="relative flex items-center mb-2">
             <input
-              placeholder="Buscar..."
-              className="w-full bg-zinc-900 border border-zinc-800 rounded-lg pl-4 pr-10 py-2 text-sm outline-none focus:border-emerald-500 transition-all"
+              placeholder="Buscar desenvolvedores..."
+              className="w-full bg-zinc-900 border border-zinc-800 rounded-lg pl-4 pr-10 py-2 text-sm outline-none focus:border-emerald-500 transition-all placeholder:text-zinc-600"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -186,7 +193,7 @@ export default function App() {
             {search.length > 0 && (
               <button
                 onClick={() => setSearch("")}
-                className="absolute right-3 text-zinc-500 hover:text-zinc-300 transition-colors"
+                className="absolute right-3 text-zinc-500 hover:text-zinc-500 transition-colors font-bold text-lg"
               >
                 ×
               </button>
