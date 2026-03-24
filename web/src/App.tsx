@@ -29,6 +29,7 @@ export default function App() {
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editUserId, setEditUserId] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // ---------------------------------------------------------
   // SITUAÇÃO 1: BUSCA INICIAL (Carregamento de Dados)
@@ -75,6 +76,7 @@ export default function App() {
     const result = userSchema.safeParse({ name, email });
     if (!result.success) return toast.error(result.error.issues[0].message);
 
+    setIsSubmitting(true);
     try {
       if (isEditing && editUserId) {
         await api.put(`/users/${editUserId}`, { name, email });
@@ -84,12 +86,14 @@ export default function App() {
         toast.success("Dados atualizados!");
       } else {
         const response = await api.post("/users", { name, email });
-        setUsers((allUsers) => [...allUsers, response.data]);
-        toast.success("Cadastrado com sucesso!");
+        setUsers([...users, response.data]);
+        toast.success("Desenvolvedor cadastrado!");
       }
       resetForm();
     } catch {
-      toast.error("Erro na operação.");
+      toast.error("Erro ao cadastrar.");
+    } finally {
+      setIsSubmitting(false); // Desliga o carregamento
     }
   }
 
@@ -142,10 +146,20 @@ export default function App() {
             onChange={(e) => setEmail(e.target.value)}
           />
 
+          <h2 className="text-xl font-semibold text-zinc-300">
+            Desenvolvedores Ativos:{" "}
+            <span className="text-emerald-500">{totalDevs}</span>
+          </h2>
+
           <button
-            className={`${isEditing ? "bg-blue-600 hover:bg-blue-700" : "bg-emerald-500 hover:bg-emerald-600"} font-bold py-3 rounded-lg transition-colors`}
+            disabled={isSubmitting}
+            className={`${isEditing ? "bg-blue-600 hover:bg-blue-700" : "bg-emerald-500 hover:bg-emerald-600"} font-bold py-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
           >
-            {isEditing ? "Salvar Alterações" : "Cadastrar Desenvolvedor"}
+            {isSubmitting
+              ? "Processando..."
+              : isEditing
+                ? "Salvar Alterações"
+                : "Cadastrar Desenvolvedor"}
           </button>
 
           {isEditing && (
@@ -161,19 +175,23 @@ export default function App() {
 
         {/* LISTAGEM E BUSCA */}
         <section className="flex flex-col gap-4">
-          <div className="flex justify-between items-center mb-2">
-            <h2 className="text-xl font-semibold text-zinc-300">
-              Desenvolvedores Ativos:{" "}
-              <span className="text-emerald-500">{totalDevs}</span>
-            </h2>
+          <div className="relative flex items-center mb-2">
             <input
               placeholder="Buscar..."
-              className="bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-2 text-sm outline-none focus:border-emerald-500"
+              className="w-full bg-zinc-900 border border-zinc-800 rounded-lg pl-4 pr-10 py-2 text-sm outline-none focus:border-emerald-500 transition-all"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
+            {/* Botão de Limpar (Aparece só se tiver texto) */}
+            {search.length > 0 && (
+              <button
+                onClick={() => setSearch("")}
+                className="absolute right-3 text-zinc-500 hover:text-zinc-300 transition-colors"
+              >
+                ×
+              </button>
+            )}
           </div>
-
           <div className="flex flex-col gap-4">
             {loading ? (
               <div className="flex flex-col gap-4">
