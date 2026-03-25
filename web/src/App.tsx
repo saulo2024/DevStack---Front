@@ -256,11 +256,15 @@ export default function App() {
             </button>
           )}
         </form>
+        // SUBSTITUIR: Bloco do Dashboard com animações individuais
         <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          {domainStats.map(([domain, count]) => (
-            <div
+          {domainStats.map(([domain, count], index) => (
+            <motion.div
               key={domain}
-              className="bg-zinc-900/50 border border-zinc-800 p-4 rounded-xl flex flex-col items-center justify-center"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }} // Cria o efeito de "um por um"
+              className="bg-zinc-900/50 border border-zinc-800 p-4 rounded-xl flex flex-col items-center justify-center hover:border-emerald-500/30 transition-colors"
             >
               <span className="text-zinc-500 text-xs uppercase font-bold tracking-wider">
                 {domain}
@@ -269,7 +273,7 @@ export default function App() {
                 {count}
               </span>
               <span className="text-zinc-600 text-[10px]">Desenvolvedores</span>
-            </div>
+            </motion.div>
           ))}
         </div>
         {/* LISTAGEM E BUSCA */}
