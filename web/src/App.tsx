@@ -27,6 +27,9 @@ export default function App() {
   const [search, setSearch] = useState(() => {
     return localStorage.getItem("@devstack:search") || "";
   });
+  const [theme, setTheme] = useState<'dark' | 'light'> (() => {
+    return (localStorage.getItem('@devstack:theme') as 'dark' | 'light' || 'dark')
+  })
   const [loading, setLoading] = useState(true);
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -49,6 +52,14 @@ export default function App() {
   useEffect(() => {
     loadUsers();
   }, []);
+
+  // ADICIONAR: Sincroniza o tema com o HTML e o LocalStorage
+  useEffect(() => {
+    const root = window.document.documentElement
+    root.classList.remove('light', 'dark')
+    root.classList.add(theme)
+    localStorage.setItem('@devstack:theme', theme)
+  }, [theme])
 
   // SITUAÇÃO 2: SINCRONIZAR A BUSCA (Gravar no navegador)
   useEffect(() => {
@@ -127,9 +138,14 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-50 p-8 flex flex-col items-center">
+    <div className="min-h-screen transition-colors duration-300 bg-white text-zinc-950 dark:bg-zinc-950 dark:text-zinc-50 p-8 flex flex-col items-center ">
       <Toaster position="top-right" />
       <Header />
+      <button 
+        onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+        className="mb-8 p-2 rounded-full bg-zinc-900 border border-zinc-800 hover: border:emerald-500 transition-all text-xs font-bold uppercase tracking-widest text-zinc-400">
+        {theme === 'dark' ? '☀️ Modo Claro' : '🌙 Modo Escuro'}
+      </button>
 
       <main className="w-full max-w-2xl">
         {/* FORMULÁRIO */}
