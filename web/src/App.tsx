@@ -107,6 +107,19 @@ export default function App() {
   // ADICIONAR: Uma contagem simples (Estado Derivado)
   const totalDevs = users.length;
 
+  // ADICIONAR: Lógica para extrair e contar domínios de e-mail
+  const domainStats = useMemo(() => {
+    const counts: Record<string, number> = {};
+    users.forEach((user) => {
+      const domain = user.email.split("@")[1] || "Outros";
+      counts[domain] = (counts[domain] || 0) + 1;
+    });
+    // Transforma em array e pega os 3 mais usados
+    return Object.entries(counts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3);
+  }, [users]);
+
   // ---------------------------------------------------------
   // SITUAÇÃO 3: CADASTRO E EDIÇÃO (Criação ou Atualização)
   // ---------------------------------------------------------
@@ -243,7 +256,22 @@ export default function App() {
             </button>
           )}
         </form>
-
+        <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          {domainStats.map(([domain, count]) => (
+            <div
+              key={domain}
+              className="bg-zinc-900/50 border border-zinc-800 p-4 rounded-xl flex flex-col items-center justify-center"
+            >
+              <span className="text-zinc-500 text-xs uppercase font-bold tracking-wider">
+                {domain}
+              </span>
+              <span className="text-2xl font-black text-emerald-500">
+                {count}
+              </span>
+              <span className="text-zinc-600 text-[10px]">Desenvolvedores</span>
+            </div>
+          ))}
+        </div>
         {/* LISTAGEM E BUSCA */}
         <section className="flex flex-col gap-4">
           <div className="relative flex items-center mb-2">
