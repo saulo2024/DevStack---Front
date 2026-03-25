@@ -27,9 +27,11 @@ export default function App() {
   const [search, setSearch] = useState(() => {
     return localStorage.getItem("@devstack:search") || "";
   });
-  const [theme, setTheme] = useState<'dark' | 'light'> (() => {
-    return (localStorage.getItem('@devstack:theme') as 'dark' | 'light' || 'dark')
-  })
+  const [theme, setTheme] = useState<"dark" | "light">(() => {
+    return (
+      (localStorage.getItem("@devstack:theme") as "dark" | "light") || "dark"
+    );
+  });
   const [loading, setLoading] = useState(true);
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -49,17 +51,44 @@ export default function App() {
     }
   }
 
+  // Lógica para gerar e baixar o arquivo CSV
+  function exportToCSV() {
+    if (filteredUsers.length === 0)
+      return toast.error("Não há dados para exportar");
+
+    const headers = "ID;Nome;E-mail\n";
+    const rows = filteredUsers
+      .map((u) => `${u.id};${u.name};${u.email}`)
+      .join("\n");
+    const blob = new Blob([headers + rows], {
+      type: "text/csv;charset=utf-8;",
+    });
+
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute(
+      "download",
+      `<devstack-report-${new Date().toLocaleDateString()}.csv`,
+    );
+    link.style.visibility = "hidd en";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success("Relatório gerado!");
+  }
+
   useEffect(() => {
     loadUsers();
   }, []);
 
   // ADICIONAR: Sincroniza o tema com o HTML e o LocalStorage
   useEffect(() => {
-    const root = window.document.documentElement
-    root.classList.remove('light', 'dark')
-    root.classList.add(theme)
-    localStorage.setItem('@devstack:theme', theme)
-  }, [theme])
+    const root = window.document.documentElement;
+    root.classList.remove("light", "dark");
+    root.classList.add(theme);
+    localStorage.setItem("@devstack:theme", theme);
+  }, [theme]);
 
   // SITUAÇÃO 2: SINCRONIZAR A BUSCA (Gravar no navegador)
   useEffect(() => {
@@ -141,10 +170,11 @@ export default function App() {
     <div className="min-h-screen transition-colors duration-300 bg-white text-zinc-950 dark:bg-zinc-950 dark:text-zinc-50 p-8 flex flex-col items-center ">
       <Toaster position="top-right" />
       <Header />
-      <button 
-        onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-        className="mb-8 p-2 rounded-full bg-zinc-900 border border-zinc-800 hover: border:emerald-500 transition-all text-xs font-bold uppercase tracking-widest text-zinc-400">
-        {theme === 'dark' ? '☀️ Modo Claro' : '🌙 Modo Escuro'}
+      <button
+        onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+        className="mb-8 p-2 rounded-full bg-zinc-900 border border-zinc-800 hover: border:emerald-500 transition-all text-xs font-bold uppercase tracking-widest text-zinc-400"
+      >
+        {theme === "dark" ? "☀️ Modo Claro" : "🌙 Modo Escuro"}
       </button>
 
       <main className="w-full max-w-2xl">
@@ -169,10 +199,19 @@ export default function App() {
             onChange={(e) => setEmail(e.target.value)}
           />
 
-          <h2 className="text-xl font-semibold text-zinc-300">
-            Desenvolvedores Ativos:{" "}
-            <span className="text-emerald-500">{totalDevs}</span>
-          </h2>
+          <div className="flex justify-between items-center mb-2">
+            <h2 className="text-xl font-semibold text-zinc-300">
+              Desenvolvedores Ativos:{" "}
+              <span className="text-emerald-500">{totalDevs}</span>
+            </h2>
+
+            <button
+              onClick={exportToCSV}
+              className="text-xs bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 px-3 py-1 rounded-md transition-all text-zinc-300 flex items-center gap-2"
+            >
+              📥 Exportar CSV
+            </button>
+          </div>
 
           <button
             disabled={isSubmitting}
