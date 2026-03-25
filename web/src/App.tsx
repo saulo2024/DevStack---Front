@@ -24,7 +24,9 @@ export default function App() {
   const [users, setUsers] = useState<User[]>([]);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(() => {
+    return localStorage.getItem("@devstack:search") || "";
+  });
   const [loading, setLoading] = useState(true);
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -47,6 +49,11 @@ export default function App() {
   useEffect(() => {
     loadUsers();
   }, []);
+
+  // SITUAÇÃO 2: SINCRONIZAR A BUSCA (Gravar no navegador)
+  useEffect(() => {
+    localStorage.setItem("@devstack:search", search);
+  }, [search]); // Executa toda vez que a variável 'search' mudar
 
   // ---------------------------------------------------------
   // SITUAÇÃO 2: FILTRO EM TEMPO REAL (Pesquisa)
@@ -154,19 +161,21 @@ export default function App() {
           <button
             disabled={isSubmitting}
             className={`w-full font-bold py-3 rounded-lg transition-all flex items-center justify-center gap-2 ${isEditing ? "bg-blue-600 hover:bg-blue-700" : "bg-emerald-500 hover:bg-emerald-600"} ${
-             isSubmitting ? "opacity-50 cursor-not-allowed" : "opacity-100 cursor-pointer" } `}
+              isSubmitting
+                ? "opacity-50 cursor-not-allowed"
+                : "opacity-100 cursor-pointer"
+            } `}
           >
             {isSubmitting ? (
               <>
-                <span className="w- h-4 border-2 border-white/30 border-t-white rounded-full animate-spin">
-                </span>
+                <span className="w- h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
                 Processando...
               </>
             ) : (
               <span>
                 {isEditing ? "Salvar Alterações" : "Cadastrar Desenvolvedor"}
               </span>
-            ) }
+            )}
           </button>
 
           {isEditing && (
