@@ -133,8 +133,21 @@ export default function App() {
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
+
+    // 1. Validação do Zod
     const result = userSchema.safeParse({ name, email });
     if (!result.success) return toast.error(result.error.issues[0].message);
+
+    // 2. NOVA REGRA: Validação de Duplicidade Local
+    const emailExists = users.some(
+      (user) =>
+        user.email.toLowerCase() === email.toLowerCase() &&
+        user.id !== editUserId,
+    );
+
+    if (emailExists) {
+      return toast.error("Este e-mail já está cadastrado na sua stack!");
+    }
 
     setIsSubmitting(true);
     try {
@@ -150,10 +163,11 @@ export default function App() {
         toast.success("Desenvolvedor cadastrado!");
       }
       resetForm();
-    } catch {
-      toast.error("Erro ao cadastrar.");
+    } catch (error) {
+      console.error("ERRO COMPLETO DA API:", error); // <--- Isso vai aparecer no seu F12
+      toast.error("Erro ao cadastrar. Verifique a conexão com o servidor.");
     } finally {
-      setIsSubmitting(false); // Desliga o carregamento
+      setIsSubmitting(false);
     }
   }
 
@@ -179,13 +193,15 @@ export default function App() {
     }
   }
 
+  // SUBSTITUIR: Início do return (Limpo e sem caracteres fantasmas)
   return (
-    <div className="min-h-screen transition-colors duration-300 bg-white text-zinc-950 dark:bg-zinc-950 dark:text-zinc-50 p-8 flex flex-col items-center ">
+    <div className="min-h-screen transition-colors duration-300 bg-white text-zinc-950 dark:bg-zinc-950 dark:text-zinc-50 p-8 flex flex-col items-center">
       <Toaster position="top-right" />
       <Header />
+
       <button
         onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-        className="mb-8 p-2 rounded-full bg-zinc-900 border border-zinc-800 hover: border:emerald-500 transition-all text-xs font-bold uppercase tracking-widest text-zinc-400"
+        className="mb-8 p-2 rounded-full bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-emerald-500 transition-all text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400"
       >
         {theme === "dark" ? "☀️ Modo Claro" : "🌙 Modo Escuro"}
       </button>
@@ -256,7 +272,7 @@ export default function App() {
             </button>
           )}
         </form>
-        // SUBSTITUIR: Bloco do Dashboard com animações individuais
+
         <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           {domainStats.map(([domain, count], index) => (
             <motion.div
