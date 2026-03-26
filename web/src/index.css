@@ -1,22 +1,19 @@
+/* SUBSTITUIR: Configuração final para Tailwind v4 */
 @import "tailwindcss";
 
-/* 1. A CHAVE MÁGICA: Isso ensina o Tailwind v4 a obedecer a classe .dark */
+/* Essa linha é a "chave" para o botão funcionar na v4 */
 @variant dark (&:where(.dark, .dark *));
 
 @theme {
   --color-zinc-950: #09090b;
 }
 
-/* 2. RESET GLOBAL */
 :root {
   color-scheme: light dark;
 }
 
-/* 3. TESTE ATÔMICO (Mantenha isso até funcionar) */
-html.light body {
-  background-color: pink !important;
-}
-
-html.dark body {
-  background-color: purple !important;
+/* Deixa a troca de cores suave e profissional */
+* {
+  transition-property: background-color, border-color, color;
+  transition-duration: 300ms;
 }
