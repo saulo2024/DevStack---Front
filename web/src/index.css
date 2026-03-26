@@ -1,1 +1,20 @@
-@import "tailwindcss"; 
+/* SUBSTITUIR: Versão limpa para Tailwind v4 */
+@import "tailwindcss";
+
+:root {
+  color-scheme: light dark;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+/* Garante que o fundo do HTML acompanhe o tema */
+html.dark {
+  background-color: #09090b; /* zinc-950 */
+}
+
+html.light {
+  background-color: #ffffff;
+}
