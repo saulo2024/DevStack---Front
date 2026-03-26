@@ -193,6 +193,15 @@ export default function App() {
     }
   }
 
+  // Esse efeito "escuta" a variável 'theme' e avisa o navegador
+  useEffect(() => {
+    if (theme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [theme]); // Toda vez que você clicar no botão, isso aqui roda
+
   // SUBSTITUIR: Início do return (Limpo e sem caracteres fantasmas)
   return (
     <div className="min-h-screen transition-colors duration-300 bg-white text-zinc-950 dark:bg-zinc-950 dark:text-zinc-50 p-8 flex flex-col items-center">
