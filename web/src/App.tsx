@@ -7,6 +7,9 @@ import { UserCard } from "./components/UserCard";
 import { motion, AnimatePresence } from "framer-motion";
 import toast, { Toaster } from "react-hot-toast";
 import { Skeleton } from "./components/Skeleton";
+import { AnalyticsChart } from "./components/AnalyticsChart";
+
+//
 
 // CONTRATO DE VALIDAÇÃO
 const userSchema = z.object({
@@ -269,25 +272,37 @@ export default function App() {
             </button>
           )}
         </form>
+        // SUBSTITUIR: Dashboard atualizado com Gráfico
+        <div className="w-full grid grid-cols-1 lg:grid-cols-4 gap-4 mb-8">
+          {/* Gráfico de Rosca (Ocupa 1 coluna) */}
+          <div className="lg:col-span-1 bg-zinc-900/40 border border-zinc-800 p-4 rounded-xl flex items-center justify-center">
+            <AnalyticsChart
+              data={domainStats.map(([name, value]) => ({ name, value }))}
+            />
+          </div>
 
-        <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          {domainStats.map(([domain, count], index) => (
-            <motion.div
-              key={domain}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }} // Cria o efeito de "um por um"
-              className="bg-zinc-900/50 border border-zinc-800 p-4 rounded-xl flex flex-col items-center justify-center hover:border-emerald-500/30 transition-colors"
-            >
-              <span className="text-zinc-500 text-xs uppercase font-bold tracking-wider">
-                {domain}
-              </span>
-              <span className="text-2xl font-black text-emerald-500">
-                {count}
-              </span>
-              <span className="text-zinc-600 text-[10px]">Desenvolvedores</span>
-            </motion.div>
-          ))}
+          {/* Cartões de Estatísticas (Ocupam o resto) */}
+          <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-4">
+            {domainStats.map(([domain, count], index) => (
+              <motion.div
+                key={domain}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: index * 0.1 }}
+                className="bg-zinc-900/50 border border-zinc-800 p-6 rounded-xl flex flex-col justify-center"
+              >
+                <span className="text-zinc-500 text-xs uppercase font-bold tracking-widest">
+                  {domain}
+                </span>
+                <span className="text-3xl font-black text-emerald-500 mt-2">
+                  {count}
+                </span>
+                <span className="text-zinc-600 text-[10px] mt-1">
+                  Devs Cadastrados
+                </span>
+              </motion.div>
+            ))}
+          </div>
         </div>
         {/* LISTAGEM E BUSCA */}
         <section className="flex flex-col gap-4">
