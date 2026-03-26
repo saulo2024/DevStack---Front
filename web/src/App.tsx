@@ -90,11 +90,6 @@ export default function App() {
     localStorage.setItem("@devstack:theme", theme);
   }, [theme]);
 
-  // SITUAÇÃO 2: SINCRONIZAR A BUSCA (Gravar no navegador)
-  useEffect(() => {
-    localStorage.setItem("@devstack:search", search);
-  }, [search]); // Executa toda vez que a variável 'search' mudar
-
   // ---------------------------------------------------------
   // SITUAÇÃO 2: FILTRO EM TEMPO REAL (Pesquisa)
   // ---------------------------------------------------------
@@ -219,9 +214,9 @@ export default function App() {
         {/* FORMULÁRIO */}
         <form
           onSubmit={handleSubmit}
-          className="bg-zinc-900 p-6 rounded-xl border border-zinc-800 mb-10 flex flex-col gap-4"
+          className="bg-white dark:bg-zinc-900 p-6 rounded-xl border border-zinc-200 dark:border-zinc-800 mb-10 flex flex-col gap-4"
         >
-          <h3 className="text-zinc-400 text-sm font-medium">
+          <h3 className="text-zinc-500 dark:text-zinc-400 text-sm font-medium">
             {isEditing ? "Editando Desenvolvedor" : "Novo Cadastro"}
           </h3>
           <input
