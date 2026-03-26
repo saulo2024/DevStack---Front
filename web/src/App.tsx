@@ -272,25 +272,25 @@ export default function App() {
             </button>
           )}
         </form>
-        // SUBSTITUIR: Dashboard atualizado com Gráfico
+
+        {/* DASHBOARD ANALÍTICO (Agora com a hierarquia correta) */}
         <div className="w-full grid grid-cols-1 lg:grid-cols-4 gap-4 mb-8">
-          {/* Gráfico de Rosca (Ocupa 1 coluna) */}
-          <div className="lg:col-span-1 bg-zinc-900/40 border border-zinc-800 p-4 rounded-xl flex items-center justify-center">
+          {/* Container do Gráfico */}
+          <div className="lg:col-span-1 bg-zinc-900/40 border border-zinc-800 p-4 rounded-xl flex items-center justify-center min-h-50">
             <AnalyticsChart
               data={domainStats.map(([name, value]) => ({ name, value }))}
             />
           </div>
 
-          {/* Cartões de Estatísticas (Ocupam o resto) */}
-          <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Cartões de Estatísticas */}
+          <div className="lg:col-span-3 gridgrid-cols-1 md:grid-cols-3 gap-4">
             {domainStats.map(([domain, count], index) => (
               <motion.div
                 key={domain}
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="bg-zinc-900/50 border border-zinc-800 p-6 rounded-xl flex flex-col justify-center"
-              >
+                className="bg-zinc-900/50 border border-zinc-800 p-6 rounded-xl flex flex-col justify-center">
                 <span className="text-zinc-500 text-xs uppercase font-bold tracking-widest">
                   {domain}
                 </span>
