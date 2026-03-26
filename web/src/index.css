@@ -1,9 +1,6 @@
 /* SUBSTITUIR: Configuração definitiva para Tailwind v4 */
 @import "tailwindcss";
 
-/* SUBSTITUIR: Configuração definitiva para Tailwind v4 */
-@import "tailwindcss";
-
 /* Essa linha abaixo diz ao Tailwind v4 para respeitar a classe .dark */
 @theme {
   --color-zinc-950: #09090b;
