@@ -188,46 +188,40 @@ export default function App() {
     }
   }
 
-  // Esse efeito "escuta" a variável 'theme' e avisa o navegador
-  useEffect(() => {
-    if (theme === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, [theme]); // Toda vez que você clicar no botão, isso aqui roda
-
   // SUBSTITUIR: Início do return (Limpo e sem caracteres fantasmas)
   return (
     <div className="min-h-screen transition-colors duration-300 bg-white text-zinc-950 dark:bg-zinc-950 dark:text-zinc-50 p-8 flex flex-col items-center">
       <Toaster position="top-right" />
       <Header />
 
-      <button onClick={() => setTheme(theme === "dark" ? "light" : "dark")} className="mb-8 p-2 rounded-full bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-emerald-500 transition-all text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400"> {theme === "dark" ? "☀️ Modo Claro" : "🌙 Modo Escuro"}
+      <button
+        onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+        className="mb-8 p-2 rounded-full bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-emerald-500 transition-all text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400"
+      >
+        {" "}
+        {theme === "dark" ? "☀️ Modo Claro" : "🌙 Modo Escuro"}
       </button>
 
       <main className="w-full max-w-2xl">
         {/* FORMULÁRIO */}
         <form
           onSubmit={handleSubmit}
-          className="bg-white dark:bg-zinc-900 p-6 rounded-xl border border-zinc-200 dark:border-zinc-800 mb-10 flex flex-col gap-4"
-        >
+          className="bg-white dark:bg-zinc-900 p-6 rounded-xl border border-zinc-200 dark:border-zinc-800 mb-10 flex flex-col gap-4">
           <h3 className="text-zinc-500 dark:text-zinc-400 text-sm font-medium">
             {isEditing ? "Editando Desenvolvedor" : "Novo Cadastro"}
           </h3>
+
           <input
             className="bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 text-zinc-900 dark:text-white rounded-lg p-3 outline-none focus:border-emerald-500 transition-colors"
             placeholder="Nome"
             value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
+            onChange={(e) => setName(e.target.value)}/>
 
           <input
             className="bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 text-zinc-900 dark:text-white rounded-lg p-3 outline-none focus:border-emerald-500 transition-colors"
             placeholder="E-mail"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+            onChange={(e) => setEmail(e.target.value)}/>
 
           <div className="flex justify-between items-center mb-2">
             <h2 className="text-xl font-semibold text-zinc-300">
