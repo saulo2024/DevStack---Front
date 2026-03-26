@@ -203,11 +203,7 @@ export default function App() {
       <Toaster position="top-right" />
       <Header />
 
-      <button
-        onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-        className="mb-8 p-2 rounded-full bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-emerald-500 transition-all text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400"
-      >
-        {theme === "dark" ? "☀️ Modo Claro" : "🌙 Modo Escuro"}
+      <button onClick={() => setTheme(theme === "dark" ? "light" : "dark")} className="mb-8 p-2 rounded-full bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-emerald-500 transition-all text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400"> {theme === "dark" ? "☀️ Modo Claro" : "🌙 Modo Escuro"}
       </button>
 
       <main className="w-full max-w-2xl">
