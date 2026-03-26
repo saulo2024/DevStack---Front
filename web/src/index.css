@@ -1,20 +1,50 @@
-/* SUBSTITUIR: Versão limpa para Tailwind v4 */
+/* SUBSTITUIR: Configuração definitiva para Tailwind v4 */
 @import "tailwindcss";
 
+/* css-disable-next-line */
+@theme {
+  --color-zinc-950: #09090b;
+}
+
+/* Força o modo de cor baseado na classe do HTML */
 :root {
   color-scheme: light dark;
 }
 
-body {
+/* Reset básico para garantir que o fundo ocupe tudo */
+html, body, #root {
+  height: 100%;
   margin: 0;
-  padding: 0;
 }
 
-/* Garante que o fundo do HTML acompanhe o tema */
-html.dark {
-  background-color: #09090b; /* zinc-950 */
+/* O "Pulo do Gato": Garante que o fundo mude mesmo se o Tailwind falhar */
+html.dark body {
+  background-color: #09090b;
 }
 
-html.light {
+html.light body {
   background-color: #ffffff;
+}
+
+/* ADICIONAR ao seu index.css */
+@layer base {
+  * {
+    /* Faz com que TUDO no site mude de cor suavemente ao trocar o tema */
+    transition-property: background-color, border-color, color, fill, stroke;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 500ms;
+  }
+}
+
+/* index.css */
+
+/* Se o fundo ficar ROSA no claro e ROXO no escuro, o erro é no Tailwind.
+   Se não mudar nada, o erro é no JavaScript/Navegador. */
+
+html.light body {
+  background-color: pink !important;
+}
+
+html.dark body {
+  background-color: purple !important;
 }
