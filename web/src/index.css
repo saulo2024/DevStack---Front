@@ -1,46 +1,18 @@
-/* SUBSTITUIR: Configuração definitiva para Tailwind v4 */
 @import "tailwindcss";
 
-/* Essa linha abaixo diz ao Tailwind v4 para respeitar a classe .dark */
+/* 1. A CHAVE MÁGICA: Isso ensina o Tailwind v4 a obedecer a classe .dark */
+@variant dark (&:where(.dark, .dark *));
+
 @theme {
   --color-zinc-950: #09090b;
 }
 
-/* Força o modo de cor baseado na classe do HTML */
+/* 2. RESET GLOBAL */
 :root {
   color-scheme: light dark;
 }
 
-/* Reset básico para garantir que o fundo ocupe tudo */
-html, body, #root {
-  height: 100%;
-  margin: 0;
-}
-
-/* O "Pulo do Gato": Garante que o fundo mude mesmo se o Tailwind falhar */
-html.dark body {
-  background-color: #09090b;
-}
-
-html.light body {
-  background-color: #ffffff;
-}
-
-/* ADICIONAR ao seu index.css */
-@layer base {
-  * {
-    /* Faz com que TUDO no site mude de cor suavemente ao trocar o tema */
-    transition-property: background-color, border-color, color, fill, stroke;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 500ms;
-  }
-}
-
-/* index.css */
-
-/* Se o fundo ficar ROSA no claro e ROXO no escuro, o erro é no Tailwind.
-   Se não mudar nada, o erro é no JavaScript/Navegador. */
-
+/* 3. TESTE ATÔMICO (Mantenha isso até funcionar) */
 html.light body {
   background-color: pink !important;
 }

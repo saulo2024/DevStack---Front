@@ -190,7 +190,7 @@ export default function App() {
 
   // SUBSTITUIR: Início do return (Limpo e sem caracteres fantasmas)
   return (
-    <div className="min-h-screen transition-colors duration-300 bg-white dark:bg-zinc-950 text-zinc-950 dark:text-zinc-50 p-8 flex flex-col items-center">
+    <div className="min-h-screen transition-colors duration-300 p-8 flex flex-col items-center">
       <Toaster position="top-right" />
       <Header />
 
