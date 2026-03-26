@@ -220,13 +220,14 @@ export default function App() {
             {isEditing ? "Editando Desenvolvedor" : "Novo Cadastro"}
           </h3>
           <input
-            className="bg-zinc-950 border border-zinc-800 rounded-lg p-3 outline-none focus:border-emerald-500"
+            className="bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 text-zinc-900 dark:text-white rounded-lg p-3 outline-none focus:border-emerald-500 transition-colors"
             placeholder="Nome"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
+
           <input
-            className="bg-zinc-950 border border-zinc-800 rounded-lg p-3 outline-none focus:border-emerald-500"
+            className="bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 text-zinc-900 dark:text-white rounded-lg p-3 outline-none focus:border-emerald-500 transition-colors"
             placeholder="E-mail"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -384,6 +385,7 @@ export default function App() {
                 >
                   Cancelar
                 </button>
+
                 <button
                   onClick={confirmDelete}
                   className="flex-1 py-2 bg-red-600 hover:bg-red-700 rounded-lg font-bold"
