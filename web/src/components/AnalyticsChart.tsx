@@ -1,4 +1,3 @@
-// ADICIONAR: Novo componente de gráfico
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts'
 
 interface ChartProps {
@@ -9,7 +8,7 @@ const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6']
 
 export function AnalyticsChart({ data }: ChartProps) {
   return (
-    <div className=" `h-[200px]` w-full flex justify-center items-center">
+    <div className="h-50 w-full flex justify-center items-center">
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie

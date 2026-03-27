@@ -274,36 +274,22 @@ export default function App() {
         </form>
 
         {/* DASHBOARD ANALÍTICO (Agora com a hierarquia correta) */}
-        <div className="w-full grid grid-cols-1 lg:grid-cols-4 gap-4 mb-8">
-          {/* Container do Gráfico */}
-          <div className="lg:col-span-1 bg-zinc-900/40 border border-zinc-800 p-4 rounded-xl flex items-center justify-center min-h-50">
+
+        {/* Container do Gráfico */}
+        <div className="lg:col-span-1 bg-zinc-900/40 border border-zinc-800 p-4 rounded-xl min-h-50">
+          {domainStats.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full text-zinc-600">
+              <span className="text-[10px] uppercase font-bold tracking-widest text-orange-500">
+                ⚠ Sem dados para o gráfico
+              </span>
+            </div>
+          ) : (
             <AnalyticsChart
               data={domainStats.map(([name, value]) => ({ name, value }))}
             />
-          </div>
-
-          {/* Cartões de Estatísticas */}
-          <div className="lg:col-span-3 gridgrid-cols-1 md:grid-cols-3 gap-4">
-            {domainStats.map(([domain, count], index) => (
-              <motion.div
-                key={domain}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="bg-zinc-900/50 border border-zinc-800 p-6 rounded-xl flex flex-col justify-center">
-                <span className="text-zinc-500 text-xs uppercase font-bold tracking-widest">
-                  {domain}
-                </span>
-                <span className="text-3xl font-black text-emerald-500 mt-2">
-                  {count}
-                </span>
-                <span className="text-zinc-600 text-[10px] mt-1">
-                  Devs Cadastrados
-                </span>
-              </motion.div>
-            ))}
-          </div>
+          )}
         </div>
+
         {/* LISTAGEM E BUSCA */}
         <section className="flex flex-col gap-4">
           <div className="relative flex items-center mb-2">
