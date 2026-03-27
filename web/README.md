@@ -1,73 +1,49 @@
-# React + TypeScript + Vite
+🚀 DevStack — Gerenciador Analítico de Desenvolvedores
+O DevStack é uma plataforma moderna e performática desenvolvida para gerenciar stacks de desenvolvedores. O projeto combina uma interface minimalista com ferramentas de análise de dados (Dashboard) e uma experiência de usuário (UX) fluida, garantindo agilidade no cadastro e monitoramento de equipes.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+📸 Preview
 
-Currently, two official plugins are available:
+<div align="center">
+  <img src="./assets/Screenshot 2026-03-27 134423.png" alt="DevStack Preview" width="600">
+</div>
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+🛠️ Tecnologias de Elite (Stack 2026)
+Frontend: React 19 + TypeScript.
 
-## React Compiler
+Estilização: Tailwind CSS v4 (Design System focado em Modo Escuro).
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Analytics: Recharts (Gráficos de rosca dinâmicos).
 
-## Expanding the ESLint configuration
+Animações: Framer Motion (Transições e Skeletons).
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Feedback: React Toastify (Notificações em tempo real).
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+Infraestrutura: Vercel (Frontend) & Koyeb (Backend/API).
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+✨ Funcionalidades Principais
+📊 Dashboard Inteligente: Visualização segmentada por domínios de e-mail em tempo real.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+🔍 Busca Instantânea: Filtro de busca otimizado com useMemo para performance máxima.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+⚡ Experiência de Carregamento: Skeleton Loaders que eliminam o "pulo de layout" durante o fetch de dados.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+🛡️ Gestão Segura (CRUD): Fluxo completo de cadastro, edição e exclusão com modal de confirmação.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+📥 Exportação de Dados: Geração de relatórios em formato CSV com um clique.
+
+🌓 Dark Mode Nativo: Interface otimizada para produtividade e conforto visual.
+
+🚀 Como Rodar o Projeto
+Clone o repositório:
+
+Bash
+git clone https://github.com/seu-usuario/devstack.git
+Instale as dependências:
+
+Bash
+npm install
+Inicie o ambiente de desenvolvimento:
+
+Bash
+npm run dev
+Acesse no navegador: http://localhost:5173
