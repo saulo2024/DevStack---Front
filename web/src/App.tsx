@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import toast, { Toaster } from "react-hot-toast";
 import { Skeleton } from "./components/Skeleton";
 import { AnalyticsChart } from "./components/AnalyticsChart";
+import { UserSkeleton } from "./components/UserSkeleton";
 
 //
 
@@ -292,68 +293,53 @@ export default function App() {
 
         {/* LISTAGEM E BUSCA */}
         <section className="flex flex-col gap-4">
-          <div className="relative flex items-center mb-2">
-            <input
-              placeholder="Buscar desenvolvedores..."
-              className="w-full bg-zinc-900 border border-zinc-800 rounded-lg pl-4 pr-10 py-2 text-sm outline-none focus:border-emerald-500 transition-all placeholder:text-zinc-600"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-            {/* Botão de Limpar (Aparece só se tiver texto) */}
-            {search.length > 0 && (
-              <button
-                onClick={() => setSearch("")}
-                className="absolute right-3 text-zinc-500 hover:text-zinc-500 transition-colors font-bold text-lg"
-              >
-                ×
-              </button>
-            )}
-          </div>
-          <div className="flex flex-col gap-4">
-            {loading ? (
-              <div className="flex flex-col gap-4">
-                <Skeleton />
-                <Skeleton />
-                <Skeleton />
-              </div>
-            ) : (
-              <AnimatePresence mode="popLayout">
-                {/* Caso 1: A busca não encontrou ninguém */}
-                {search !== "" && filteredUsers.length === 0 ? (
-                  <motion.p
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="text-center py-10 text-zinc-500 italic"
-                  >
-                    Nenhum desenvolvedor encontrado com "{search}"...
-                  </motion.p>
-                ) : /* Caso 2: O banco de dados está realmente vazio */
-                users.length === 0 ? (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="text-center py-16 bg-zinc-900/30 border-2 border-dashed border-zinc-800 rounded-xl"
-                  >
-                    <p className="text-zinc-400">Sua stack ainda está vazia.</p>
-                    <p className="text-zinc-600 text-sm">
-                      Cadastre o primeiro dev acima! 🚀
-                    </p>
-                  </motion.div>
-                ) : (
-                  /* Caso 3: Tudo certo, mostra a lista filtrada */
-                  filteredUsers.map((user) => (
-                    <UserCard
-                      key={user.id}
-                      name={user.name}
-                      email={user.email}
-                      onDelete={() => setUserToDelete(user)}
-                      onEdit={() => handleEditClick(user)}
-                    />
-                  ))
-                )}
-              </AnimatePresence>
-            )}
-          </div>
+          {loading ? (
+            // 1. Estado de Carregamento
+            <div className="flex flex-col gap-4">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <UserSkeleton key={i} />
+              ))}
+            </div>
+          ) : (
+            <AnimatePresence mode="popLayout">
+              {search !== "" && filteredUsers.length === 0 ? (
+                // 2. Caso a busca não encontre ninguém
+                <motion.p
+                  key="search-empty"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="text-center py-10 text-zinc-500 italic"
+                >
+                  Nenhum desenvolvedor encontrado com "{search}"...
+                </motion.p>
+              ) : users.length === 0 ? (
+                // 3. Caso o banco de dados esteja realmente vazio
+                <motion.div
+                  key="db-empty"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="text-center py-16 bg-zinc-900/30 border-2 border-dashed border-zinc-800 rounded-xl"
+                >
+                  <p className="text-zinc-400">Sua stack ainda está vazia.</p>
+                  <p className="text-zinc-600 text-sm">
+                    Cadastre o primeiro dev acima! 🚀
+                  </p>
+                </motion.div>
+              ) : (
+                // 4. Lista de cards filtrada e ordenada
+                filteredUsers.map((user) => (
+                  <UserCard
+                    key={user.id}
+                    name={user.name}
+                    email={user.email}
+                    onDelete={() => setUserToDelete(user)}
+                    onEdit={() => handleEditClick(user)}
+                  />
+                ))
+              )}
+            </AnimatePresence>
+          )}
         </section>
       </main>
 
