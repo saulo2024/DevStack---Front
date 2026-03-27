@@ -6,7 +6,6 @@ import { Header } from "./components/Header";
 import { UserCard } from "./components/UserCard";
 import { motion, AnimatePresence } from "framer-motion";
 import toast, { Toaster } from "react-hot-toast";
-import { Skeleton } from "./components/Skeleton";
 import { AnalyticsChart } from "./components/AnalyticsChart";
 import { UserSkeleton } from "./components/UserSkeleton";
 
@@ -291,7 +290,25 @@ export default function App() {
           )}
         </div>
 
-        {/* LISTAGEM E BUSCA */}
+        {/* BARRA DE BUSCA (Adicione aqui para o setSearch funcionar) */}
+        <div className="relative flex items-center mb-4">
+          <input
+            placeholder="Buscar desenvolvedores na stack..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)} // <--- Aqui o setSearch volta à ativa!
+            className="w-full bg-zinc-950 border border-zinc-800 rounded-lg pl-4 pr-10 py-3 text-sm outline-none focus:border-emerald-500 transition-all placeholder:text-zinc-600"
+          />
+
+          {/* Ícone de busca opcional ou botão de limpar */}
+          {search.length > 0 && (
+            <button
+              onClick={() => setSearch("")}
+              className="absolute right-3 text-zinc-500 hover:text-zinc-300 transition-colors"
+            >
+              ✕
+            </button>
+          )}
+        </div>
         <section className="flex flex-col gap-4">
           {loading ? (
             // 1. Estado de Carregamento
