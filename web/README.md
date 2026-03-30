@@ -1,10 +1,10 @@
-🚀 DevStack — Gerenciador Analítico de Desenvolvedores
-O DevStack é uma plataforma moderna e performática desenvolvida para gerenciar stacks de desenvolvedores. O projeto combina uma interface minimalista com ferramentas de análise de dados (Dashboard) e uma experiência de usuário (UX) fluida, garantindo agilidade no cadastro e monitoramento de equipes.
+🚀 DevStack - Interactive Developer Dashboard
+O DevStack é uma plataforma de alta fidelidade para gerenciamento de ecossistemas de desenvolvedores. O projeto foca em uma experiência de usuário (UX) fluida, utilizando animações de cascata, validação rigorosa de dados e visualização interativa através de gráficos dinâmicos.
 
 📸 Preview
 
 <div align="center">
-  <img src="./assets/Screenshot 2026-03-27 134423.png" alt="DevStack Preview" width="600">
+  <img src="./assets/print.png" alt="DevStack Preview" width="600">
 </div>
 
 🛠️ Tecnologias de Elite (Stack 2026)

@@ -8,9 +8,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import toast, { Toaster } from "react-hot-toast";
 import { UserSkeleton } from "./components/UserSkeleton";
 import { Pie, Cell, ResponsiveContainer, PieChart, Tooltip } from "recharts";
+import { Users, Filter, Download, Trash2, Search, Check } from "lucide-react";
 
 // Variantes para o container pai (quem coordena a cascata)
-const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6'];
+const COLORS = ["#10b981", "#3b82f6", "#f59e0b", "#ef4444", "#8b5cf6"];
 // DEFINIÇÕES DE ANIMAÇÃO (Cole fora da função App)
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -59,8 +60,8 @@ export default function App() {
   const [editUserId, setEditUserId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeDomain, setActiveDomain] = useState<string | null>(null);
-
-  
+  const [selectedIds, setSelectedIds] = useState<string[]>([]); // Novo estado para múltipla seleção
+  const [isSelected, setIsSelected] = useState(false); // Estado para o checkbox individual
   // ---------------------------------------------------------
   // SITUAÇÃO 1: BUSCA INICIAL (Carregamento de Dados)
   // ---------------------------------------------------------
@@ -74,31 +75,31 @@ export default function App() {
     }
   }
 
-  // Lógica para gerar e baixar o arquivo CSV
   function exportToCSV() {
-    if (filteredUsers.length === 0)
-      return toast.error("Não há dados para exportar");
+    // 1. Primeiro, criamos as linhas do CSV com os dados filtrados
+    const csvRows = [
+      ["Nome", "E-mail"], // Cabeçalho
+      ...filteredUsers.map((u) => [u.name, u.email]), // Dados dos usuários
+    ];
 
-    const headers = "ID;Nome;E-mail\n";
-    const rows = filteredUsers
-      .map((u) => `${u.id};${u.name};${u.email}`)
-      .join("\n");
-    const blob = new Blob([headers + rows], {
+    // 2. Transformamos o array em uma string formatada (separada por vírgula e quebra de linha)
+    const csvContent = csvRows.map((e) => e.join(",")).join("\n");
+
+    // 3. Agora sim, criamos o Blob usando o conteúdo gerado acima
+    const blob = new Blob([csvContent], {
       type: "text/csv;charset=utf-8;",
     });
 
-    const link = document.createElement("a");
+    // 4. Criamos o link de download e clicamos nele automaticamente
     const url = URL.createObjectURL(blob);
-    link.setAttribute("href", url);
-    link.setAttribute(
-      "download",
-      `<devstack-report-${new Date().toLocaleDateString()}.csv`,
-    );
-    link.style.visibility = "hidd en";
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "devstack_report.csv");
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    toast.success("Relatório gerado!");
+
+    toast.success("Relatório gerado com sucesso!");
   }
 
   useEffect(() => {
@@ -134,9 +135,6 @@ export default function App() {
     }
     return list;
   }, [users, search, activeDomain]); // Adicione activeDomain aqui!
-
-  // ADICIONAR: Uma contagem simples (Estado Derivado)
-  const totalDevs = users.length;
 
   // ADICIONAR: Lógica para extrair e contar domínios de e-mail
   const domainStats = useMemo(() => {
@@ -224,6 +222,20 @@ export default function App() {
     }
   }
 
+  const toggleSelect = (id: string) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
+    );
+  };
+
+  const handleBulkDelete = () => {
+    if (window.confirm(`Excluir ${selectedIds.length} desenvolvedores?`)) {
+      setUsers((prev) => prev.filter((user) => !selectedIds.includes(user.id)));
+      setSelectedIds([]);
+      toast.success("Excluídos com sucesso!");
+    }
+  };
+
   // SUBSTITUIR: Início do return (Limpo e sem caracteres fantasmas)
   return (
     <div className="min-h-screen transition-colors duration-300 bg-white dark:bg-zinc-950 text-zinc-950 dark:text-zinc-50 p-8 flex flex-col items-center">
@@ -251,7 +263,9 @@ export default function App() {
             className="bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 text-zinc-900 dark:text-white rounded-lg p-3 outline-none focus:border-emerald-500 transition-colors"
             placeholder="Nome"
             value={name}
-            onChange={(e) => setName(e.target.value.replace(/[^a-zA-Z\s]/g, ""))} // Permite apenas letras e espaços
+            onChange={(e) =>
+              setName(e.target.value.replace(/[^a-zA-Z\s]/g, ""))
+            } // Permite apenas letras e espaços
           />
 
           <input
@@ -261,19 +275,57 @@ export default function App() {
             onChange={(e) => setEmail(e.target.value)}
           />
 
-          <div className="flex justify-between items-center mb-2">
-            <h2 className="text-xl font-semibold text-zinc-300">
-              Desenvolvedores Ativos:{" "}
-              <span className="text-emerald-500">{totalDevs}</span>
-            </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            {/* Card 1: Total de Devs */}
+            <div className="bg-zinc-900/40 border border-zinc-800 p-5 rounded-2xl flex justify-between items-center hover:border-emerald-500/50 transition-all group cursor-default">
+              <div>
+                <p className="text-zinc-500 text-[10px] uppercase font-bold tracking-widest">
+                  Devs Stack
+                </p>
+                <h3 className="text-3xl font-bold mt-1 text-white">
+                  {users.length}
+                </h3>
+                <div className="flex items-center gap-1 text-emerald-500 text-[10px] font-bold mt-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  SISTEMA ATIVO
+                </div>
+              </div>
+              <div className="bg-emerald-500/10 p-3 rounded-xl text-emerald-500 group-hover:scale-110 transition-transform">
+                <Users size={24} />
+              </div>
+            </div>
+            {/* Card 2: Filtro Ativo */}
+            <div className="bg-zinc-900/40 border border-zinc-800 p-5 rounded-2xl flex justify-between items-center">
+              <div>
+                <p className="text-zinc-500 text-[10px] uppercase font-bold tracking-widest">
+                  Filtro Atual
+                </p>
+                <h3 className="text-lg font-bold mt-1 text-zinc-300 truncate`max-w-[150px]`">
+                  {activeDomain || "Nenhum Selecionado"}
+                </h3>
+              </div>
+              <div className="bg-blue-500/10 p-3 rounded-xl text-blue-500">
+                <Filter size={24} />
+              </div>
+            </div>
 
-            <button
-              type="button"
+            {/* Card 3: Exportar (Ação Rápida) */}
+            <div
+              className="bg-zinc-900/40 border border-zinc-800 p-5 rounded-2xl flex justify-between items-center hover:bg-zinc-800/50 transition-colors cursor-pointer"
               onClick={exportToCSV}
-              className="text-xs bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 px-3 py-1 rounded-md transition-all text-zinc-300 flex items-center gap-2"
             >
-              📥 Exportar CSV
-            </button>
+              <div>
+                <p className="text-zinc-500 text-[10px] uppercase font-bold tracking-widest">
+                  Relatório CSV
+                </p>
+                <h3 className="text-lg font-bold mt-1 text-zinc-300">
+                  Baixar Dados
+                </h3>
+              </div>
+              <div className="bg-purple-500/10 p-3 rounded-xl text-purple-500">
+                <Download size={24} />
+              </div>
+            </div>
           </div>
 
           <button
@@ -307,38 +359,79 @@ export default function App() {
           )}
         </form>
 
-            {/* AQUI ENTRA O RESPONSIVE CONTAINER QUE ESTAVA FALTANDO */}
-            <ResponsiveContainer width="100%" height={200}>
-              <PieChart>
-                <Pie
-                  data={domainStats.map(([name, value]) => ({ name, value }))}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={80}
-                  paddingAngle={5}
-                  dataKey="value"
-                  onClick={(data) => { setActiveDomain(activeDomain === data.name ? null : (data.name ?? null));
-                  }}
-                  style={{ cursor: "pointer" }}
-                >
-                  {domainStats.map((_, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={COLORS[index % COLORS.length]}
-                    />
-                  ))}
-                </Pie>
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "#18181b",
-                    border: "1px solid #27272a",
-                    borderRadius: "8px",
-                  }}
-                  itemStyle={{ color: "#fff" }}
+        {/* AQUI ENTRA O RESPONSIVE CONTAINER QUE ESTAVA FALTANDO */}
+        <ResponsiveContainer width="100%" height={200}>
+          <PieChart>
+            <Pie
+              data={domainStats.map(([name, value]) => ({ name, value }))}
+              cx="50%"
+              cy="50%"
+              innerRadius={60}
+              outerRadius={80}
+              paddingAngle={5}
+              dataKey="value"
+              onClick={(data) => {
+                setActiveDomain(
+                  activeDomain === data.name ? null : (data.name ?? null),
+                );
+              }}
+              style={{ cursor: "pointer" }}
+            >
+              {domainStats.map((_, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={COLORS[index % COLORS.length]}
                 />
-              </PieChart>
-            </ResponsiveContainer>
+              ))}
+            </Pie>
+            <PieChart>
+              <defs>
+                <filter
+                  id="shadow"
+                  x="-20%"
+                  y="-20%"
+                  width="140%"
+                  height="140%"
+                >
+                  <feGaussianBlur in="SourceAlpha" stdDeviation="3" />
+                  <feOffset dx="2" dy="4" result="offsetblur" />
+                  <feComponentTransfer>
+                    <feFuncA type="linear" slope="0.5" />
+                  </feComponentTransfer>
+                  <feMerge>
+                    <feMergeNode />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+              </defs>
+              <Pie
+                data={domainStats}
+                innerRadius={65} // Aumentar o buraco do meio deixa mais elegante
+                outerRadius={85}
+                stroke="none" // Tirar a borda branca padrão é essencial
+                /* ... resto das props ... */
+              >
+                {/* Aplique o filtro de sombra em cada Cell */}
+                {domainStats.map((_, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={COLORS[index % COLORS.length]}
+                    style={{ filter: "url(#shadow)" }}
+                  />
+                ))}
+              </Pie>
+            </PieChart>
+
+            <Tooltip
+              contentStyle={{
+                backgroundColor: "#18181b",
+                border: "1px solid #27272a",
+                borderRadius: "8px",
+              }}
+              itemStyle={{ color: "#fff" }}
+            />
+          </PieChart>
+        </ResponsiveContainer>
 
         {/* BARRA DE BUSCA (Adicione aqui para o setSearch funcionar) */}
         <div className="relative flex items-center mb-4">
@@ -365,13 +458,26 @@ export default function App() {
             Filtrando por domínio: <strong>{activeDomain}</strong>{" "}
             <button
               onClick={() => setActiveDomain(null)}
-              className="ml-2 text-zinc-500 hover:text-zinc-300 transition-colors"
+              className="ml-2 text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50 p-1 rounded cursor-pointer transition-all"
             >
               ✕ Limpar Filtro
             </button>
           </div>
         )}
 
+        {selectedIds.length > 0 && (
+          <div className="bg-emerald-500/10 border border-emerald-500/20 p-3 rounded-xl mb-4 flex justify-between items-center animate-in fade-in slide-in-from-top-2">
+            <span className="text-emerald-500 text-xs font-bold">
+              {selectedIds.length} selecionado(s)
+            </span>
+            <button
+              onClick={handleBulkDelete}
+              className="flex items-center gap-2 text-xs bg-red-500/10 text-red-500 px-3 py-1.5 rounded-lg hover:bg-red-500/20 transition-colors"
+            >
+              <Trash2 size={14} /> Excluir Selecionados
+            </button>
+          </div>
+        )}
 
         <section className="flex flex-col gap-4">
           {loading ? (
@@ -417,20 +523,41 @@ export default function App() {
                   animate="visible"
                   className="flex flex-col gap-4"
                 >
-                  {filteredUsers.map((user) => (
+                  {filteredUsers.length === 0 ? (
                     <motion.div
-                      key={user.id}
-                      variants={itemVariants} // Cada card entra um por um
-                      layout
+                      variants={itemVariants}
+                      className="flex flex-col items-center justify-center p-10 bg-zinc-900/20 border-2 border-dashed border-zinc-800 rounded-2xl"
                     >
-                      <UserCard
-                        name={user.name}
-                        email={user.email}
-                        onDelete={() => setUserToDelete(user)}
-                        onEdit={() => handleEditClick(user)}
-                      />
+                      <Search className="text-zinc-700 mb-2" size={32} />
+                      <p className="text-zinc-500 text-sm">
+                        Nenhum desenvolvedor encontrado com esse filtro.
+                      </p>
                     </motion.div>
-                  ))}
+                  ) : (
+                    // 555: Mudamos o parêntese ( por chaves {
+                    filteredUsers.map((user) => {
+                      // AQUI É A MÁGICA: verificamos se o ID está na lista de selecionados
+                      const isSelected = selectedIds.includes(user.id);
+
+                      return (
+                        <motion.div
+                          key={user.id}
+                          variants={itemVariants}
+                          layout
+                        >
+                          <UserCard
+                            name={user.name}
+                            email={user.email}
+                            onDelete={() => setUserToDelete(user)}
+                            onEdit={() => handleEditClick(user)}
+                            // PASSE ESTAS DUAS NOVAS PROPS PARA O USERCARD:
+                            isSelected={isSelected}
+                            onToggle={() => toggleSelect(user.id)}
+                          />
+                        </motion.div>
+                      );
+                    })
+                  )}
                 </motion.div>
               )}
             </AnimatePresence>
