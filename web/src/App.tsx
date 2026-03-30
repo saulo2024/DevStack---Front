@@ -251,7 +251,7 @@ export default function App() {
             className="bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 text-zinc-900 dark:text-white rounded-lg p-3 outline-none focus:border-emerald-500 transition-colors"
             placeholder="Nome"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => setName(e.target.value.replace(/[^a-zA-Z\s]/g, ""))} // Permite apenas letras e espaços
           />
 
           <input
@@ -268,6 +268,7 @@ export default function App() {
             </h2>
 
             <button
+              type="button"
               onClick={exportToCSV}
               className="text-xs bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 px-3 py-1 rounded-md transition-all text-zinc-300 flex items-center gap-2"
             >
