@@ -20,6 +20,15 @@ Feedback: React Toastify (Notificações em tempo real).
 
 Infraestrutura: Vercel (Frontend) & Koyeb (Backend/API).
 
+## 🧠 Engineering Challenges & Solutions
+
+Developing this dashboard wasn't just about UI; it was about solving real frontend architecture problems:
+
+- **State Syncing**: Managed complex filtering by syncing `Recharts` interaction with React state, allowing the PieChart to act as a dynamic filter for the user list.
+- **Type Safety**: Integrated `Zod` for runtime validation, ensuring that the backend (Koyeb) only receives clean, structured data.
+- **Perceived Performance**: Implemented `Framer Motion` stagger animations and `Skeleton Loaders` to eliminate layout shifts and provide a high-end user experience.
+- **Efficient Data Handling**: Used `useMemo` to keep search and filtering logic performant, even with multiple criteria active at once.
+
 ✨ Funcionalidades Principais
 📊 Dashboard Inteligente: Visualização segmentada por domínios de e-mail em tempo real.
 

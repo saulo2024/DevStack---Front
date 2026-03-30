@@ -6,10 +6,28 @@ import { Header } from "./components/Header";
 import { UserCard } from "./components/UserCard";
 import { motion, AnimatePresence } from "framer-motion";
 import toast, { Toaster } from "react-hot-toast";
-import { AnalyticsChart } from "./components/AnalyticsChart";
 import { UserSkeleton } from "./components/UserSkeleton";
+import { Pie, Cell, ResponsiveContainer, PieChart, Tooltip } from "recharts";
 
-//
+// Variantes para o container pai (quem coordena a cascata)
+const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6'];
+// DEFINIÇÕES DE ANIMAÇÃO (Cole fora da função App)
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1 },
+  },
+} as any;
+
+const itemVariants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: { type: "spring", stiffness: 100 },
+  },
+} as any;
 
 // CONTRATO DE VALIDAÇÃO
 const userSchema = z.object({
@@ -40,7 +58,9 @@ export default function App() {
   const [isEditing, setIsEditing] = useState(false);
   const [editUserId, setEditUserId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [activeDomain, setActiveDomain] = useState<string | null>(null);
 
+  
   // ---------------------------------------------------------
   // SITUAÇÃO 1: BUSCA INICIAL (Carregamento de Dados)
   // ---------------------------------------------------------
@@ -97,10 +117,23 @@ export default function App() {
   // SITUAÇÃO 2: FILTRO EM TEMPO REAL (Pesquisa)
   // ---------------------------------------------------------
   const filteredUsers = useMemo(() => {
-    return users
-      .filter((user) => user.name.toLowerCase().includes(search.toLowerCase()))
-      .sort((a, b) => a.name.localeCompare(b.name)); // Ordenação A-Z
-  }, [users, search]);
+    let list = users;
+
+    // Filtro por texto (o que você já tem)
+    if (search.trim() !== "") {
+      list = list.filter(
+        (user) =>
+          user.name.toLowerCase().includes(search.trim().toLowerCase()) ||
+          user.email.toLowerCase().includes(search.trim().toLowerCase()),
+      );
+    }
+
+    // Novo: filtro por clique no gráfico
+    if (activeDomain) {
+      list = list.filter((user) => user.email.endsWith(`@${activeDomain}`));
+    }
+    return list;
+  }, [users, search, activeDomain]); // Adicione activeDomain aqui!
 
   // ADICIONAR: Uma contagem simples (Estado Derivado)
   const totalDevs = users.length;
@@ -273,22 +306,38 @@ export default function App() {
           )}
         </form>
 
-        {/* DASHBOARD ANALÍTICO (Agora com a hierarquia correta) */}
-
-        {/* Container do Gráfico */}
-        <div className="lg:col-span-1 bg-zinc-900/40 border border-zinc-800 p-4 rounded-xl min-h-50">
-          {domainStats.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-zinc-600">
-              <span className="text-[10px] uppercase font-bold tracking-widest text-orange-500">
-                ⚠ Sem dados para o gráfico
-              </span>
-            </div>
-          ) : (
-            <AnalyticsChart
-              data={domainStats.map(([name, value]) => ({ name, value }))}
-            />
-          )}
-        </div>
+            {/* AQUI ENTRA O RESPONSIVE CONTAINER QUE ESTAVA FALTANDO */}
+            <ResponsiveContainer width="100%" height={200}>
+              <PieChart>
+                <Pie
+                  data={domainStats.map(([name, value]) => ({ name, value }))}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={80}
+                  paddingAngle={5}
+                  dataKey="value"
+                  onClick={(data) => { setActiveDomain(activeDomain === data.name ? null : (data.name ?? null));
+                  }}
+                  style={{ cursor: "pointer" }}
+                >
+                  {domainStats.map((_, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={COLORS[index % COLORS.length]}
+                    />
+                  ))}
+                </Pie>
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "#18181b",
+                    border: "1px solid #27272a",
+                    borderRadius: "8px",
+                  }}
+                  itemStyle={{ color: "#fff" }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
 
         {/* BARRA DE BUSCA (Adicione aqui para o setSearch funcionar) */}
         <div className="relative flex items-center mb-4">
@@ -309,18 +358,33 @@ export default function App() {
             </button>
           )}
         </div>
+
+        {activeDomain && (
+          <div className="mb-4 text-sm text-emerald-500">
+            Filtrando por domínio: <strong>{activeDomain}</strong>{" "}
+            <button
+              onClick={() => setActiveDomain(null)}
+              className="ml-2 text-zinc-500 hover:text-zinc-300 transition-colors"
+            >
+              ✕ Limpar Filtro
+            </button>
+          </div>
+        )}
+
+
         <section className="flex flex-col gap-4">
           {loading ? (
-            // 1. Estado de Carregamento
+            /* 1. Estado de Carregamento (Skeletons) */
             <div className="flex flex-col gap-4">
               {Array.from({ length: 3 }).map((_, i) => (
                 <UserSkeleton key={i} />
               ))}
             </div>
           ) : (
+            /* 2. Animações e Lista Real */
             <AnimatePresence mode="popLayout">
               {search !== "" && filteredUsers.length === 0 ? (
-                // 2. Caso a busca não encontre ninguém
+                /* Caso A: Busca vazia */
                 <motion.p
                   key="search-empty"
                   initial={{ opacity: 0, y: 10 }}
@@ -331,7 +395,7 @@ export default function App() {
                   Nenhum desenvolvedor encontrado com "{search}"...
                 </motion.p>
               ) : users.length === 0 ? (
-                // 3. Caso o banco de dados esteja realmente vazio
+                /* Caso B: Banco vazio */
                 <motion.div
                   key="db-empty"
                   initial={{ opacity: 0 }}
@@ -344,16 +408,29 @@ export default function App() {
                   </p>
                 </motion.div>
               ) : (
-                // 4. Lista de cards filtrada e ordenada
-                filteredUsers.map((user) => (
-                  <UserCard
-                    key={user.id}
-                    name={user.name}
-                    email={user.email}
-                    onDelete={() => setUserToDelete(user)}
-                    onEdit={() => handleEditClick(user)}
-                  />
-                ))
+                /* Caso C: LISTA COM ANIMAÇÃO DE CASCATA (STAGGER) */
+                <motion.div
+                  key="list-container"
+                  variants={containerVariants} // Variáveis que criamos no topo
+                  initial="hidden"
+                  animate="visible"
+                  className="flex flex-col gap-4"
+                >
+                  {filteredUsers.map((user) => (
+                    <motion.div
+                      key={user.id}
+                      variants={itemVariants} // Cada card entra um por um
+                      layout
+                    >
+                      <UserCard
+                        name={user.name}
+                        email={user.email}
+                        onDelete={() => setUserToDelete(user)}
+                        onEdit={() => handleEditClick(user)}
+                      />
+                    </motion.div>
+                  ))}
+                </motion.div>
               )}
             </AnimatePresence>
           )}
