@@ -15,6 +15,7 @@ export function UserCard({ name, email, onDelete, onEdit, isSelected, onToggle }
   const avatarUrl = `https://www.gravatar.com/avatar/${btoa(email.toLowerCase())}?d=identicon`;
 
   return (
+
     <motion.article
       layout
       initial={{ opacity: 0, y: 10 }}

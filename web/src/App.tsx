@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import toast, { Toaster } from "react-hot-toast";
 import { UserSkeleton } from "./components/UserSkeleton";
 import { Pie, Cell, ResponsiveContainer, PieChart, Tooltip } from "recharts";
-import { Users, Filter, Download, Trash2, Search, Check } from "lucide-react";
+import { Users, Filter, Download, Trash2, Search } from "lucide-react";
 
 // Variantes para o container pai (quem coordena a cascata)
 const COLORS = ["#10b981", "#3b82f6", "#f59e0b", "#ef4444", "#8b5cf6"];
@@ -60,8 +60,7 @@ export default function App() {
   const [editUserId, setEditUserId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeDomain, setActiveDomain] = useState<string | null>(null);
-  const [selectedIds, setSelectedIds] = useState<string[]>([]); // Novo estado para múltipla seleção
-  const [isSelected, setIsSelected] = useState(false); // Estado para o checkbox individual
+  const [selected, setSelected] = useState<string[]>([]); // Estado para o checkbox individual
   // ---------------------------------------------------------
   // SITUAÇÃO 1: BUSCA INICIAL (Carregamento de Dados)
   // ---------------------------------------------------------
@@ -223,15 +222,15 @@ export default function App() {
   }
 
   const toggleSelect = (id: string) => {
-    setSelectedIds((prev) =>
+    setSelected((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
     );
   };
 
   const handleBulkDelete = () => {
-    if (window.confirm(`Excluir ${selectedIds.length} desenvolvedores?`)) {
-      setUsers((prev) => prev.filter((user) => !selectedIds.includes(user.id)));
-      setSelectedIds([]);
+    if (window.confirm(`Excluir ${selected.length} desenvolvedores?`)) {
+      setUsers((prev) => prev.filter((user) => !selected.includes(user.id)));
+      setSelected([]);
       toast.success("Excluídos com sucesso!");
     }
   };
@@ -465,10 +464,10 @@ export default function App() {
           </div>
         )}
 
-        {selectedIds.length > 0 && (
+        {selected.length > 0 && (
           <div className="bg-emerald-500/10 border border-emerald-500/20 p-3 rounded-xl mb-4 flex justify-between items-center animate-in fade-in slide-in-from-top-2">
             <span className="text-emerald-500 text-xs font-bold">
-              {selectedIds.length} selecionado(s)
+              {selected.length} selecionado(s)
             </span>
             <button
               onClick={handleBulkDelete}
@@ -536,8 +535,7 @@ export default function App() {
                   ) : (
                     // 555: Mudamos o parêntese ( por chaves {
                     filteredUsers.map((user) => {
-                      // AQUI É A MÁGICA: verificamos se o ID está na lista de selecionados
-                      const isSelected = selectedIds.includes(user.id);
+                      const isSelected = selected.includes(user.id);
 
                       return (
                         <motion.div
@@ -550,7 +548,6 @@ export default function App() {
                             email={user.email}
                             onDelete={() => setUserToDelete(user)}
                             onEdit={() => handleEditClick(user)}
-                            // PASSE ESTAS DUAS NOVAS PROPS PARA O USERCARD:
                             isSelected={isSelected}
                             onToggle={() => toggleSelect(user.id)}
                           />
